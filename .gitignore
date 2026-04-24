@@ -1,0 +1,33 @@
+# Entorno virtual
+.venv/
+venv/
+env/
+
+# Variables de entorno
+.env
+.env.local
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Sistema Mac
+.DS_Store
+
+# IDEs
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MySQL / dumps locales
+*.sql
+*.db
