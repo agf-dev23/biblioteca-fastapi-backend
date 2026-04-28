@@ -1,7 +1,11 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware  # [NUEVO]
+from fastapi.middleware.cors import CORSMiddleware
 
 from api.libros import router as libros_router
+
+# 👇 IMPORTS NUEVOS
+from database import Base, engine
+from models.libro import Libro  # importante para que detecte la tabla
 
 
 # Creamos la instancia principal de FastAPI
@@ -11,19 +15,25 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# 👇 ESTO ES LA CLAVE
+# Crea automáticamente las tablas en MySQL si no existen
+Base.metadata.create_all(bind=engine)
 
-# [NUEVO] Configuración de CORS
+
+# Configuración de CORS
 origins = [
-    "http://localhost:4200",  # Angular
-    "http://localhost:5173",  # React (Vite)
+    "http://localhost:4200",
+    "http://localhost:5173",
+    # 👇 añade tu frontend en producción (Vercel)
+    "https://TU-FRONTEND.vercel.app",
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Permite todos los métodos (GET, POST, PUT, DELETE)
-    allow_headers=["*"],  # Permite todos los headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

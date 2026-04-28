@@ -5,37 +5,53 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Cargamos las variables del archivo .env
+# Cargamos variables locales desde .env
 load_dotenv()
 
-# Leemos las variables de conexión desde el entorno
+# Leemos variables del entorno
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
+DB_PORT = os.getenv("DB_PORT", "3306")
 DB_NAME = os.getenv("DB_NAME")
 
-# Construimos la URL de conexión para MySQL usando PyMySQL
+# Validamos que Railway/local tenga todas las variables necesarias
+required_vars = {
+    "DB_USER": DB_USER,
+    "DB_PASSWORD": DB_PASSWORD,
+    "DB_HOST": DB_HOST,
+    "DB_PORT": DB_PORT,
+    "DB_NAME": DB_NAME,
+}
+
+# Si falta alguna variable, mostramos exactamente cuál falta
+missing_vars = [name for name, value in required_vars.items() if not value]
+
+if missing_vars:
+    raise RuntimeError(
+        f"Faltan variables de entorno para la base de datos: {', '.join(missing_vars)}"
+    )
+
+# Construimos la URL de conexión MySQL
 DATABASE_URL = (
     f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
 
-# Creamos el motor de conexión de SQLAlchemy
+# Creamos el motor de conexión
 engine = create_engine(DATABASE_URL)
 
-# Creamos una fábrica de sesiones para trabajar con la base de datos
+# Creamos sesiones para usar en FastAPI
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=engine,
 )
 
-# Base será la clase padre para nuestros modelos SQLAlchemy
+# Clase base para los modelos
 Base = declarative_base()
 
 
-# Dependencia para FastAPI.
-# Abre una sesión de base de datos por petición y la cierra al finalizar.
+# Dependencia para abrir/cerrar conexión por cada petición
 def get_db():
     db = SessionLocal()
 
@@ -45,8 +61,7 @@ def get_db():
         db.close()
 
 
-# Prueba rápida de conexión.
-# Permite ejecutar: python database.py
+# Prueba rápida ejecutando: python database.py
 if __name__ == "__main__":
     try:
         with engine.connect():
