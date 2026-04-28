@@ -36,17 +36,17 @@ Base.metadata.create_all(bind=engine)
 # ==============================
 
 origins = [
-    "http://localhost:4200",
-    "http://localhost:5173",
-    "https://biblioteca-react-frontend.vercel.app",
+    "http://localhost:4200",  # Angular local
+    "http://localhost:5173",  # React local
+    "https://biblioteca-react-frontend.vercel.app",  # Frontend en producción (Vercel)
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],   # Permite GET, POST, PUT, DELETE
+    allow_headers=["*"],   # Permite todos los headers
 )
 
 
