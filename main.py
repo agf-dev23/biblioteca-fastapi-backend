@@ -36,9 +36,9 @@ Base.metadata.create_all(bind=engine)
 # ==============================
 
 origins = [
-    "http://localhost:4200",  # Angular local
-    "http://localhost:5173",  # React local
-    "https://TU-FRONTEND.vercel.app",  # 👈 CAMBIA ESTO POR TU URL REAL
+    "http://localhost:4200",
+    "http://localhost:5173",
+    "https://biblioteca-react-frontend.vercel.app",
 ]
 
 app.add_middleware(
