@@ -1,49 +1,68 @@
+# ==============================
+# IMPORTS
+# ==============================
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.libros import router as libros_router
 
-# 👇 IMPORTS NUEVOS
+# 👇 IMPORTS PARA BASE DE DATOS
 from database import Base, engine
-from models.libro import Libro  # importante para que detecte la tabla
+from models.libro import Libro  # necesario para que detecte la tabla
 
 
-# Creamos la instancia principal de FastAPI
+# ==============================
+# APP
+# ==============================
+
 app = FastAPI(
     title="Biblioteca Personal API",
     description="API REST para administrar libros personales.",
     version="1.0.0",
 )
 
-# 👇 ESTO ES LA CLAVE
-# Crea automáticamente las tablas en MySQL si no existen
+
+# ==============================
+# CREAR TABLAS AUTOMÁTICAMENTE
+# ==============================
+
+# Esto crea la tabla 'libros' en Railway si no existe
 Base.metadata.create_all(bind=engine)
 
 
-# Configuración de CORS
+# ==============================
+# CORS (MUY IMPORTANTE)
+# ==============================
+
 origins = [
-    "http://localhost:4200",
-    "http://localhost:5173",
-    # 👇 añade tu frontend en producción (Vercel)
-    "https://TU-FRONTEND.vercel.app",
+    "http://localhost:4200",  # Angular local
+    "http://localhost:5173",  # React local
+    "https://TU-FRONTEND.vercel.app",  # 👈 CAMBIA ESTO POR TU URL REAL
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"],  # permite GET, POST, PUT, DELETE
     allow_headers=["*"],
 )
 
 
-# Registramos el router de libros
+# ==============================
+# ROUTERS
+# ==============================
+
 app.include_router(libros_router)
 
 
-# Endpoint de prueba
+# ==============================
+# ENDPOINT DE PRUEBA
+# ==============================
+
 @app.get("/")
 def inicio():
     return {
-        "mensaje": "API de Biblioteca Personal funcionando correctamente 📚"
+        "mensaje": "API de Biblioteca Personal funcionando correctamente 🚀"
     }
